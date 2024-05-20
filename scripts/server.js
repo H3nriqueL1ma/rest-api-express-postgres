@@ -19,24 +19,29 @@ server.post("/user", async (req, res) => {
     try {
         const clientVerify = await database.readRegister(username);
 
-        if (clientVerify) {
-            return res.status(409).json({
-                success: false,
-                message: 409
-            });
-        } else {
-            const passwordEncrypted = await encryptCredentials(password);
+        if (!clientVerify) {
+            const emailVerify = await database.readRegisterEmail(email);
 
-            await database.create({
-                username,
-                email,
-                passwordEncrypted,
-                confirm
-            });
-        
-            return res.status(201).json({
-                success: true,
-                message: "User registered successfully"
+            if (emailVerify) {
+                return res.status(409).json({
+                    message: 409
+                });
+            } else {
+                const passwordEncrypted = await encryptCredentials(password);
+
+                await database.create({
+                    username,
+                    email,
+                    passwordEncrypted
+                });
+                
+                return res.status(201).json({
+                    message: 201
+                });
+            }
+        } else {
+            return res.status(409).json({
+                message: 409
             });
         }
     } catch (error) {
@@ -72,5 +77,5 @@ server.post("/user/verify-user-credentials", async (req, res) => {
 })
 
 server.listen(port, () => {
-    console.log(`Server started at: localhost:${port}`);
+    console.log(`Server started at: http://localhost:${port}`);
 });

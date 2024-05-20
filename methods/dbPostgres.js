@@ -1,11 +1,15 @@
 import { sql } from "./db.js";
-import { encryptCredentials, validateCredentials } from "./encrypt.js";
+import { validateCredentials } from "./encrypt.js";
 
 export class DbPostgresMethods {
     async readRegister (username) {
         const client = await sql`SELECT * FROM clients WHERE username = ${username}`;
+        return client.length ? client[0] : false;
+    }
 
-        return client[0];
+    async readRegisterEmail (email) {
+        const client = await sql`SELECT * FROM clients WHERE email = ${email}`;
+        return client.length ? true : false;
     }
 
     async readLogin (username, password) {
@@ -16,11 +20,7 @@ export class DbPostgresMethods {
 
             const isPassValid = await validateCredentials(password, clientHashPass);
 
-            if (isPassValid) {
-                return true;
-            } else {
-                return false;
-            }
+            return isPassValid ? true : false;
         } else {
             return 0;
         }

@@ -9,7 +9,7 @@ try {
             id          SERIAL PRIMARY KEY,
             username    VARCHAR(50) NOT NULL UNIQUE,
             email       VARCHAR(50) NOT NULL,
-            password    VARCHAR(100) NOT NULL
+            password    VARCHAR(500) NOT NULL
         );
     `
     console.log("Table created!");
