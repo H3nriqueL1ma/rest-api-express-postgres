@@ -23,9 +23,7 @@ server.post("/user", async (req, res) => {
             const emailVerify = await database.readRegisterEmail(email);
 
             if (emailVerify) {
-                return res.status(409).json({
-                    message: 409
-                });
+                return res.status(409).json({ message: 409 });
             } else {
                 const passwordEncrypted = await encryptCredentials(password);
 
@@ -35,14 +33,10 @@ server.post("/user", async (req, res) => {
                     passwordEncrypted
                 });
                 
-                return res.status(201).json({
-                    message: 201
-                });
+                return res.status(201).json({ message: 201 });
             }
         } else {
-            return res.status(409).json({
-                message: 409
-            });
+            return res.status(409).json({ message: 409 });
         }
     } catch (error) {
         console.log("Error during user registration: ", error);
@@ -53,28 +47,26 @@ server.post("/user", async (req, res) => {
     }
 });
 
-server.post("/user/verify-user-credentials", async (req, res) => {
+server.post("/user/login", async (req, res) => {
     const { usernameLogin: username, passwordLogin: password } = req.body;
 
     try {
         const user = await database.readLogin(username, password);
+
         if (user === true) {
-            res.status(200).json({
-                message: 200
-            });
+            res.status(200).json({ message: 200 });
         } else if (user === false) {
-            res.status(401).json({
-                message: 401
-            });
+            res.status(401).json({ message: 401 });
         } else {
-            res.status(404).json({
-                message: 404
-            })
+            res.status(404).json({ message: 404 })
         }
     } catch (error) {
-        res.status(500).send();
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
-})
+});
 
 server.listen(port, () => {
     console.log(`Server started at: http://localhost:${port}`);
