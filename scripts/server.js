@@ -68,6 +68,30 @@ server.post("/user/login", async (req, res) => {
     }
 });
 
+server.post("/user/task", async (req, res) => {
+    const { username: username, taskUser: task } = req.body;
+
+    const userData = database.readRegister(username);
+
+    try {
+        if (userData) {
+            const data = {
+                
+            };
+
+            database.create_task();
+        } else {
+
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+});
+
 server.listen(port, () => {
     console.log(`Server started at: http://localhost:${port}`);
 });

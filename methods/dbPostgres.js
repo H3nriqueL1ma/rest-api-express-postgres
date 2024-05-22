@@ -32,11 +32,17 @@ export class DbPostgresMethods {
         await sql`INSERT INTO clients (username, email, password) VALUES (${username}, ${email}, ${passwordEncrypted})`
     }
 
-    async update (username, email, password, id) {
-        await sql`UPDATE clients set username = ${username}, email = ${email}, password = ${password} WHERE id = ${id}`;
+    async create_task (data) {
+        const { userID, taskContent, completed } = data;
+
+        await sql`INSERT INTO tasks (user_id, task_content, completed) VALUES ()`;
     }
 
-    async del (username) {
-        await sql`DELETE FROM clients WHERE username = ${username}`;
-    }
+    // async update (username, email, password, id) {
+    //     await sql`UPDATE clients set username = ${username}, email = ${email}, password = ${password} WHERE id = ${id}`;
+    // }
+
+    // async del (username) {
+    //     await sql`DELETE FROM clients WHERE username = ${username}`;
+    // }
 }
