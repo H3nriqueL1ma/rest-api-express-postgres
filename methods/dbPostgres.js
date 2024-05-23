@@ -35,7 +35,7 @@ export class DbPostgresMethods {
     async create_task (data) {
         const { userID, taskContent, completed } = data;
 
-        await sql`INSERT INTO tasks (user_id, task_content, completed) VALUES ()`;
+        await sql`INSERT INTO tasks (user_id, task_content, completed) VALUES (${userID}, ${taskContent}, ${completed})`;
     }
 
     // async update (username, email, password, id) {

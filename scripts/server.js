@@ -71,17 +71,21 @@ server.post("/user/login", async (req, res) => {
 server.post("/user/task", async (req, res) => {
     const { username: username, taskUser: task } = req.body;
 
+    const completedTask = false;
+
     const userData = database.readRegister(username);
 
     try {
         if (userData) {
             const data = {
-                
+                userID: username,
+                taskContent: task,
+                completed: completedTask
             };
 
-            database.create_task();
+            database.create_task(data);
         } else {
-
+            res.status(404).send();
         }
 
     } catch (error) {
