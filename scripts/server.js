@@ -7,11 +7,13 @@ const server = express();
 const port = 8000;
 const database = new DbPostgresMethods();
 
-server.use(json());
-
 server.use(cors({
-    origin: "http://localhost:3000"
+    origin: "http://localhost:3000",
+    methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
+    credentials: true
 }));
+
+server.use(json());
 
 server.post("/user", async (req, res) => {
     const { userNameRegistered: username, emailRegistered: email, passwordRegistered: password, confirmRegistered: confirm } = req.body;
@@ -20,20 +22,26 @@ server.post("/user", async (req, res) => {
         const clientVerify = await database.readRegister(username);
 
         if (!clientVerify) {
-            const emailVerify = await database.readRegisterEmail(email);
+            const emailDomainVerify = await database.verifyEmailDomainExists(email);
 
-            if (emailVerify) {
-                return res.status(409).json({ message: 409 });
+            if (emailDomainVerify) {
+                const emailVerify = await database.readRegisterEmail(email);
+
+                if (emailVerify) {
+                    return res.status(409).json({ message: 409 });
+                } else {
+                    const passwordEncrypted = await encryptCredentials(password);
+    
+                    await database.create({
+                        username,
+                        email,
+                        passwordEncrypted
+                    });
+                    
+                    return res.status(201).json({ message: 201 });
+                }
             } else {
-                const passwordEncrypted = await encryptCredentials(password);
-
-                await database.create({
-                    username,
-                    email,
-                    passwordEncrypted
-                });
-                
-                return res.status(201).json({ message: 201 });
+                return res.status(404).json({ message: 404 });
             }
         } else {
             return res.status(409).json({ message: 409 });
@@ -80,11 +88,29 @@ server.post("/user/task", async (req, res) => {
                 taskContent: task
             };
 
-            console.log(data);
-
             await database.create_task(data);
 
-            const tasks = await database.read_task(data.userID);
+            res.status(200).send();
+        } else {
+            res.status(404).send();
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+});
+
+server.post("/user/task/read-user-tasks", async (req, res) => {
+    const { username } = req.body;
+
+    const userData = await database.readRegister(username);
+
+    try {
+        if (userData) {
+            const tasks = await database.read_task(userData.id);
 
             res.status(200).json(tasks);
         } else {
@@ -97,6 +123,13 @@ server.post("/user/task", async (req, res) => {
             message: "Internal server error"
         });
     }
+});
+
+server.delete("/user/task/delete-user-task", async (req, res) => {
+    const { taskID } = req.body;
+
+    await database.delete_task(taskID);
+    res.status(200).send();
 });
 
 server.listen(port, () => {
