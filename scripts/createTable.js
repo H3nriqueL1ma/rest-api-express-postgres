@@ -20,8 +20,7 @@ try {
         CREATE TABLE tasks (
             task_id         SERIAL PRIMARY KEY,
             user_id         INT REFERENCES clients(id) ON DELETE CASCADE,
-            task_content    VARCHAR(300) NOT NULL,
-            completed       BOOLEAN DEFAULT FALSE
+            task_content    VARCHAR(300) NOT NULL
         );
     `
     console.log("Table tasks created!");

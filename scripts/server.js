@@ -71,19 +71,22 @@ server.post("/user/login", async (req, res) => {
 server.post("/user/task", async (req, res) => {
     const { username: username, taskUser: task } = req.body;
 
-    const completedTask = false;
-
-    const userData = database.readRegister(username);
+    const userData = await database.readRegister(username);
 
     try {
         if (userData) {
             const data = {
-                userID: username,
-                taskContent: task,
-                completed: completedTask
+                userID: userData.id,
+                taskContent: task
             };
 
-            database.create_task(data);
+            console.log(data);
+
+            await database.create_task(data);
+
+            const tasks = await database.read_task(data.userID);
+
+            res.status(200).json(tasks);
         } else {
             res.status(404).send();
         }

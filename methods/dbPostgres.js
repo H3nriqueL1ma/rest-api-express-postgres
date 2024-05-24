@@ -33,11 +33,18 @@ export class DbPostgresMethods {
     }
 
     async create_task (data) {
-        const { userID, taskContent, completed } = data;
+        const { userID, taskContent } = data;
 
-        await sql`INSERT INTO tasks (user_id, task_content, completed) VALUES (${userID}, ${taskContent}, ${completed})`;
+        await sql`INSERT INTO tasks (user_id, task_content) VALUES (${userID}, ${taskContent})`;
     }
 
+    async read_task (userID) {
+        const tasks = await sql`SELECT * FROM tasks WHERE user_id = ${userID}`;
+
+        console.log(tasks);
+
+        return tasks;
+    }
     // async update (username, email, password, id) {
     //     await sql`UPDATE clients set username = ${username}, email = ${email}, password = ${password} WHERE id = ${id}`;
     // }
