@@ -76,6 +76,49 @@ server.post("/user/login", async (req, res) => {
     }
 });
 
+server.post("/user/email-verify", async (req, res) => {
+    const { emailVerify: emailReceived } = req.body;
+
+
+    try {
+        const email_Verify = await database.readRegisterEmail(emailReceived);
+
+        if (email_Verify) {
+            return res.status(409).json({ message: 409 });
+        } else {
+            return res.status(404).json({ message: 404 });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+});
+
+server.post("/user/reset-pass", async (req, res) => {
+    const { newPasswordRegistered: newPass, storedEmail: email } = req.body;
+
+    try {
+        const emailVerify = await database.readRegisterEmail(email);
+
+        if (emailVerify) {
+            const passwordEncrypted = await encryptCredentials(newPass);
+
+            database.updatePass(passwordEncrypted, email);
+
+            return res.status(200).json({ message: 200 });
+        } else {
+            return res.status(404).json({ message: 404 });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+});
+
 server.post("/user/task", async (req, res) => {
     const { username: username, taskUser: task } = req.body;
 

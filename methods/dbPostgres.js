@@ -59,6 +59,10 @@ export class DbPostgresMethods {
         await sql`INSERT INTO clients (username, email, password) VALUES (${username}, ${email}, ${passwordEncrypted})`
     }
 
+    async updatePass (newPass, email) {
+        await sql`UPDATE clients SET password = ${newPass} WHERE email = ${email}`;
+    }
+
     async create_task (data) {
         const { userID, taskContent } = data;
         await sql`INSERT INTO tasks (user_id, task_content) VALUES (${userID}, ${taskContent})`;
