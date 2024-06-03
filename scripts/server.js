@@ -16,7 +16,7 @@ server.use(cors({
 server.use(json());
 
 server.post("/user", async (req, res) => {
-    const { userNameRegistered: username, emailRegistered: email, passwordRegistered: password, confirmRegistered: confirm } = req.body;
+    const { username, email, password } = req.body;
 
     try {
         const clientVerify = await database.readRegister(username);
@@ -56,7 +56,7 @@ server.post("/user", async (req, res) => {
 });
 
 server.post("/user/login", async (req, res) => {
-    const { usernameLogin: username, passwordLogin: password } = req.body;
+    const { username, password } = req.body;
 
     try {
         const user = await database.readLogin(username, password);
@@ -77,11 +77,10 @@ server.post("/user/login", async (req, res) => {
 });
 
 server.post("/user/email-verify", async (req, res) => {
-    const { emailVerify: emailReceived } = req.body;
-
+    const { email } = req.body;
 
     try {
-        const email_Verify = await database.readRegisterEmail(emailReceived);
+        const email_Verify = await database.readRegisterEmail(email);
 
         if (email_Verify) {
             return res.status(409).json({ message: 409 });
@@ -97,7 +96,7 @@ server.post("/user/email-verify", async (req, res) => {
 });
 
 server.post("/user/reset-pass", async (req, res) => {
-    const { newPasswordRegistered: newPass, storedEmail: email } = req.body;
+    const { newPass, email } = req.body;
 
     try {
         const emailVerify = await database.readRegisterEmail(email);
