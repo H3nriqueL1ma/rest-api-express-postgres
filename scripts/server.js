@@ -76,8 +76,8 @@ server.post("/user/login", async (req, res) => {
     }
 });
 
-server.post("/user/email-verify", async (req, res) => {
-    const { email } = req.body;
+server.post("/user/email-verify/:email", async (req, res) => {
+    const email = req.params.email;
 
     try {
         const email_Verify = await database.readRegisterEmail(email);
