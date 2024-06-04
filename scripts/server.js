@@ -132,7 +132,7 @@ server.post("/user/task", async (req, res) => {
 
             await database.create_task(data);
 
-            res.status(200).send();
+            res.status(201).send();
         } else {
             res.status(404).send();
         }
